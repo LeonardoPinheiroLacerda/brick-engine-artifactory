@@ -54,6 +54,14 @@ Deno.serve(async (req: Request) => {
 
     if (uploadError) {
       console.error("Storage upload error:", uploadError);
+      
+      if (uploadError.message.includes('row-level security') || uploadError.message.includes('rls')) {
+        return new Response(JSON.stringify({ error: `Version ${version} of the game '${gameName}' already exists. Please update the version in your package.json before publishing.` }), {
+          status: 409,
+          headers: { ...corsHeaders, "Content-Type": "application/json" }
+        });
+      }
+
       throw new Error(`Failed to upload bundle: ${uploadError.message}`);
     }
 
@@ -85,6 +93,14 @@ Deno.serve(async (req: Request) => {
       console.error("DB Insert error:", dbError);
       // Attempt cleanup of storage file if DB insert fails
       await supabase.storage.from('game_bundles').remove([filePath]);
+
+      if (dbError.code === '23505') {
+        return new Response(JSON.stringify({ error: `Version ${version} of the game '${gameName}' has already been published or is under review. Please update the version in your package.json before trying again.` }), {
+          status: 409,
+          headers: { ...corsHeaders, "Content-Type": "application/json" }
+        });
+      }
+
       throw new Error(`Failed to save game request: ${dbError.message}`);
     }
 
