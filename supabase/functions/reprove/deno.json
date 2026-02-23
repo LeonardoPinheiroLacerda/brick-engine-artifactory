@@ -1,5 +1,5 @@
 {
   "imports": {
-    "jsr:@supabase/supabase-js@2": "jsr:@supabase/supabase-js@^2.47.16"
+    "@supabase/functions-js": "jsr:@supabase/functions-js@^2"
   }
 }

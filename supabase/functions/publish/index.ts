@@ -63,7 +63,8 @@ Deno.serve(async (req: Request) => {
       .from('game_bundles')
       .getPublicUrl(filePath);
 
-    const bundleUrl = publicUrlData.publicUrl;
+    const externalSupabaseUrl = Deno.env.get("EXTERNAL_SUPABASE_URL") ?? Deno.env.get("SUPABASE_URL") ?? "";
+    const bundleUrl = publicUrlData.publicUrl.replace("http://kong:8000", externalSupabaseUrl);
 
     // 3. Create Game Request entry
     const { data: requestRecord, error: dbError } = await supabase
@@ -87,8 +88,12 @@ Deno.serve(async (req: Request) => {
       throw new Error(`Failed to save game request: ${dbError.message}`);
     }
 
+
+
     // 4. Send email notification to admin
     const adminEmail = Deno.env.get("ADMIN_EMAIL");
+
+    console.log(adminEmail)
     if (adminEmail) {
       const emailHtml = `
         <h2>Nova Solicitação de Jogo!</h2>

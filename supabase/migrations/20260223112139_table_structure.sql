@@ -32,8 +32,8 @@ ON storage.objects FOR SELECT
 TO public
 USING (bucket_id = 'game_bundles');
 
--- Storage RLS Policies: Allow authenticated users to upload new bundles
-CREATE POLICY "Authenticated Upload"
+-- Storage RLS Policies: Allow public to upload new bundles
+CREATE POLICY "Public Upload"
 ON storage.objects FOR INSERT
-TO authenticated
+TO public
 WITH CHECK (bucket_id = 'game_bundles');
