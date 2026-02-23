@@ -2,3 +2,5 @@
 brick-engine-pipeline.postman_collection.json
 .vscode
 .DS_Store
+supabase/.temp
+supabase/.branches
